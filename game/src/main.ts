@@ -94,23 +94,31 @@ function onPlay() {
 }
 
 const keys: any = {};
-const speed = 1;
+const speed = 10;
 
 function playerMove() {
   Object.entries(keys).forEach(([key, value]) => {
     if (value == true) {
       switch (key) {
         case 'KeyW':
-            camera.position.z += speed * Math.cos(camera.rotation.y) * delta
+          camera.translateZ(-speed * delta);
+          // camera.position.z += Math.cos(camera.rotation.y) * -speed
+          // camera.position.x += Math.sin(camera.rotation.y) * -speed
             break;
         case 'KeyA':
-            camera.position.x += -speed * Math.sin(camera.rotation.y) * delta
+          camera.translateX(-speed * delta);
+          // camera.position.x += Math.sin(camera.rotation.y + Math.PI / 2) * -speed
+          // camera.position.z += Math.cos(camera.rotation.y + Math.PI / 2) * -speed
             break;
         case 'KeyD':
-            camera.position.z += -speed * Math.cos(camera.rotation.y) * delta
+          camera.translateX(speed * delta);
+          // camera.position.x += Math.sin(camera.rotation.y + Math.PI / 2) * speed 
+          // camera.position.z += -Math.cos(camera.rotation.y - Math.PI / 2) * speed 
             break;
         case 'KeyS':
-            camera.position.x += speed * Math.sin(camera.rotation.y) * delta
+          camera.translateZ(speed * delta);
+          // camera.position.z += Math.cos(camera.rotation.y) * speed
+          // camera.position.x += Math.sin(camera.rotation.y) * speed 
             break;
         case 'Space':
           camera.position.y += speed * delta
