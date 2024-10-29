@@ -160,7 +160,7 @@ function loadMap() {
   // Load a glTF resource
   loader.load(
     // resource URL
-    "/assetes/de_dust_2_cs_map/scene.gltf",
+    "/Shooter/assetes/de_dust_2_cs_map/scene.gltf",
     // called when the resource is loaded
     function ( gltf ) {
   
