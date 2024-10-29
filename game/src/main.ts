@@ -1,5 +1,6 @@
 import './style.css'
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import Stats from 'stats.js';
 
 let camera: any, scene: any, renderer: any;
@@ -30,6 +31,7 @@ const init = () => {
   scene.add(cube);
 
   // Set the camera position
+  camera.position.set(0, 50, 0)
   camera.position.z = 5;
 
   // Animation loop
@@ -94,7 +96,7 @@ function onPlay() {
 }
 
 const keys: any = {};
-const speed = 10;
+const speed = 50;
 
 function playerMove() {
   Object.entries(keys).forEach(([key, value]) => {
@@ -152,9 +154,85 @@ function addEventListeners() {
   playBtn.addEventListener('click', onPlay);
 }
 
+function loadMap() {
+  const loader = new GLTFLoader();
+  
+  // Load a glTF resource
+  loader.load(
+    // resource URL
+    "/assetes/de_dust_2_cs_map/scene.gltf",
+    // called when the resource is loaded
+    function ( gltf ) {
+  
+      scene.add( gltf.scene );
+  
+      const model = gltf.scene;
+      const kef = 40;
+      model.position.set(0 * kef, -100 * kef, -120 * kef); // Adjust based on model's initial position
+      model.scale.set(0.1 * kef, 0.1 * kef, 0.1 * kef); // Scale to make the model more visible
+      gltf.animations; // Array<THREE.AnimationClip>
+      gltf.scene; // THREE.Group
+      gltf.scenes; // Array<THREE.Group>
+      gltf.cameras; // Array<THREE.Camera>
+      gltf.asset; // Object
+      console.log(gltf)
+  
+    },
+    // called while loading is progressing
+    function ( xhr ) {
+  
+      console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+  
+    },
+    // called when loading has errors
+    function ( error ) {
+  
+      console.log( 'An error happened', error );
+  
+    }
+  );
+
+}
+
+function createDirectionalLight(position: any, color: any, intensity: any) {
+  const { x, y, z } = position;
+  const directionalLight1 = new THREE.DirectionalLight(color, intensity);
+
+  directionalLight1.position.set(x, y, z);
+
+  scene.add(directionalLight1);
+}
+
+const defaultDirectionalLightColor = '#ffffff';
+const defaultDirectionalLightIntensity = 0.2;
+const lightDistanceRange = 200;
+
+function initLight() {
+  let position;
+  const [color, intensity] = [defaultDirectionalLightColor, defaultDirectionalLightIntensity];
+
+  position = new THREE.Vector3(0, lightDistanceRange, lightDistanceRange);
+  createDirectionalLight(position, color, intensity);
+
+  position = new THREE.Vector3(0, lightDistanceRange, -lightDistanceRange);
+  createDirectionalLight(position, color, intensity);
+
+  position = new THREE.Vector3(lightDistanceRange, lightDistanceRange, 0);
+  createDirectionalLight(position, color, intensity);
+
+  position = new THREE.Vector3(-lightDistanceRange, lightDistanceRange, 0);
+  createDirectionalLight(position, color, intensity);
+
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+}
+
 function main() {
   init();
 
   addEventListeners()
+
+  initLight() 
+  loadMap()
 }
 main()
