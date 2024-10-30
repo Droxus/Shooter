@@ -5,7 +5,7 @@ import Stats from 'stats.js';
 
 let camera: any, scene: any, renderer: any;
 const euler = new THREE.Euler(0, 0, 0, 'YXZ');
-const sensitivity = 1;
+const sensitivity = 0.01;
 
 const clock = new THREE.Clock();
 let delta = 0;
@@ -75,18 +75,26 @@ function clamp(value: number, min: number, max: number) {
 }
 
 function onMouseMove(event: MouseEvent) {
-  const movementX = event.movementX;
-  const movementY = event.movementY;
+  const movementX = event.movementX * delta * sensitivity * 10; // Adjust multiplier as needed
+  const movementY = event.movementY * delta * sensitivity * 10;
 
-  euler.x -= movementY / (1 / sensitivity * 1000)
-  euler.y -= movementX / (1 / sensitivity * 1000)
+  // Update Euler angles for rotation
+  euler.x -= movementY;
+  euler.y -= movementX;
 
+  // Clamp the up/down rotation to prevent flipping
   const minAngle = -Math.PI / 2;
   const maxAngle = Math.PI / 2;
+  euler.x = clamp(euler.x, minAngle, maxAngle);
 
-  euler.x = clamp(euler.x, minAngle, maxAngle)
-  camera.quaternion.setFromEuler(euler);
+  // Create a target quaternion from the updated Euler angles
+  const targetQuaternion = new THREE.Quaternion().setFromEuler(euler);
+
+  // Smoothly interpolate (slerp) the camera quaternion towards the target quaternion
+  camera.quaternion.slerp(targetQuaternion, 0.2); // Adjust 0.2 for different levels of smoothing
 }
+
+
 
 function onPlay() {
   lockScreen();
@@ -158,9 +166,10 @@ function loadMap() {
   const loader = new GLTFLoader();
   
   // Load a glTF resource
+  console.log( `${location.href}assetes/de_dust_2_cs_map/scene.gltf`)
   loader.load(
     // resource URL
-    "/Shooter/assetes/de_dust_2_cs_map/scene.gltf",
+    `${import.meta.env.BASE_URL}assetes/de_dust_2_cs_map/scene.gltf`,
     // called when the resource is loaded
     function ( gltf ) {
   
